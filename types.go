@@ -46,6 +46,7 @@ type Command struct {
 type Package struct {
 	Name             string
 	ShortDescription map[string]template.HTML
+	Description      map[string]template.HTML
 	Commands         []Command
 }
 
@@ -54,6 +55,7 @@ type Environment struct {
 	Level            string
 	Label            []string
 	ShortDescription map[string]template.HTML
+	Description      map[string]template.HTML
 	Variant          []Variant
 }
 

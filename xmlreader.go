@@ -1,6 +1,7 @@
 package ltxref
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 	"html/template"
@@ -19,6 +20,11 @@ func ReadXMLFile(filename string) (Ltxref, error) {
 		return Ltxref{}, err
 	}
 	defer r.Close()
+	return ReadXML(r)
+}
+
+func ReadXMLData(data []byte) (Ltxref, error) {
+	r := bytes.NewReader(data)
 	return ReadXML(r)
 }
 
@@ -103,6 +109,7 @@ func readVariant(attributes []xml.Attr, dec *xml.Decoder) Variant {
 func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 	pkg := Package{}
 	pkg.ShortDescription = make(map[string]template.HTML)
+	pkg.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
 		case "name":
@@ -120,6 +127,9 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 			case "shortdescription":
 				lang, text := readDescription(v.Attr, dec)
 				pkg.ShortDescription[lang] = text
+			case "description":
+				lang, text := readDescription(v.Attr, dec)
+				pkg.Description[lang] = text
 			case "command":
 				pkg.Commands = append(pkg.Commands, readCommand(v.Attr, dec))
 			}
@@ -137,6 +147,7 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) Environment {
 	env := Environment{}
 	env.ShortDescription = make(map[string]template.HTML)
+	env.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
 		case "name":
@@ -158,6 +169,9 @@ func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) Environment {
 			case "shortdescription":
 				lang, text := readDescription(v.Attr, dec)
 				env.ShortDescription[lang] = text
+			case "description":
+				lang, text := readDescription(v.Attr, dec)
+				env.Description[lang] = text
 			case "variant":
 				variant := readVariant(v.Attr, dec)
 				env.Variant = append(env.Variant, variant)
