@@ -45,12 +45,12 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 				lr.commands = append(lr.commands, cmd)
 			case "environment":
 				env := readEnvironment(v.Attr, dec)
-				lr.Environments = append(lr.Environments, env)
+				lr.environments = append(lr.environments, env)
 			case "documentclass":
-				lr.Documentclasses = append(lr.Documentclasses, readDocumentclass(v.Attr, dec))
+				lr.documentclasses = append(lr.documentclasses, readDocumentclass(v.Attr, dec))
 			case "package":
 				env := readPackage(v.Attr, dec)
-				lr.Packages = append(lr.Packages, env)
+				lr.packages = append(lr.packages, env)
 			}
 		case xml.EndElement:
 			switch v.Name.Local {

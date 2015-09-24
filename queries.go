@@ -7,57 +7,13 @@ import (
 	"github.com/renstrom/fuzzysearch/fuzzy"
 )
 
-// Return all commands with a given tag in no special order
-func (l *Ltxref) GetCommandsWithTag(tagname string) []Command {
-	var commandsWithTag []Command
-	for _, command := range l.commands {
-		if hasTag(command.Label, tagname) {
-			commandsWithTag = append(commandsWithTag, command)
-		}
-	}
-	return commandsWithTag
-}
-
-// Return all environments with a given tag in no special order
-func (l *Ltxref) GetEnvironmentsWithTag(tagname string) []Environment {
-	var environmentsWithTag []Environment
-	for _, env := range l.Environments {
-		if hasTag(env.Label, tagname) {
-			environmentsWithTag = append(environmentsWithTag, env)
-		}
-	}
-	return environmentsWithTag
-}
-
-// Return all documentclasses with a given tag in no special order
-func (l *Ltxref) GetDocumentclassesWithTag(tagname string) []Documentclass {
-	var classesWithTag []Documentclass
-	for _, env := range l.Documentclasses {
-		if hasTag(env.Label, tagname) {
-			classesWithTag = append(classesWithTag, env)
-		}
-	}
-	return classesWithTag
-}
-
-// Return all packages with a given tag in no special order
-func (l *Ltxref) GetPackagesWithTag(tagname string) []Package {
-	var packagesWithTag []Package
-	for _, env := range l.Packages {
-		if hasTag(env.Label, tagname) {
-			packagesWithTag = append(packagesWithTag, env)
-		}
-	}
-	return packagesWithTag
-}
-
 // packagename may be empty for the kernel commands
 func (l *Ltxref) GetCommandFromPackage(commandname string, packagename string) *Command {
 	var cmdlist []Command
 	// Needs better implementation!
 
 	if packagename != "" {
-		for _, v := range l.Packages {
+		for _, v := range l.packages {
 			if v.Name == packagename {
 				cmdlist = v.Commands
 				break
@@ -84,13 +40,13 @@ func (l *Ltxref) Tags() []string {
 			tags[label] = true
 		}
 	}
-	for _, v := range l.Environments {
+	for _, v := range l.environments {
 		for _, label := range v.Label {
 			tags[label] = true
 		}
 	}
 
-	for _, v := range l.Packages {
+	for _, v := range l.packages {
 		for _, label := range v.Label {
 			tags[label] = true
 		}
@@ -101,7 +57,7 @@ func (l *Ltxref) Tags() []string {
 
 		}
 	}
-	for _, v := range l.Documentclasses {
+	for _, v := range l.documentclasses {
 		for _, label := range v.Label {
 			tags[label] = true
 		}
@@ -118,15 +74,16 @@ func (l *Ltxref) Tags() []string {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterCommands(like string) []Command {
-	if like == "" {
+func (l *Ltxref) FilterCommands(like string, tag string) []Command {
+	if like == "" && tag == "" {
 		return l.commands
 	} else {
 		like = strings.ToLower(like)
+		tag = strings.ToLower(tag)
 	}
 	var commandsThatMatch []Command
 	for _, command := range l.commands {
-		if fuzzy.Match(like, command.Name) {
+		if fuzzy.Match(like, command.Name) && (tag == "" || hasTag(command.Label, tag)) {
 			commandsThatMatch = append(commandsThatMatch, command)
 		}
 	}
@@ -134,15 +91,16 @@ func (l *Ltxref) FilterCommands(like string) []Command {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterEnvironments(like string) []Environment {
-	if like == "" {
-		return l.Environments
+func (l *Ltxref) FilterEnvironments(like string, tag string) []Environment {
+	if like == "" && tag == "" {
+		return l.environments
 	} else {
 		like = strings.ToLower(like)
+		tag = strings.ToLower(tag)
 	}
 	var itemsThatMatch []Environment
-	for _, item := range l.Environments {
-		if fuzzy.Match(like, item.Name) {
+	for _, item := range l.environments {
+		if fuzzy.Match(like, item.Name) && (tag == "" || hasTag(item.Label, tag)) {
 			itemsThatMatch = append(itemsThatMatch, item)
 		}
 	}
@@ -150,15 +108,16 @@ func (l *Ltxref) FilterEnvironments(like string) []Environment {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterDocumentclasses(like string) []Documentclass {
-	if like == "" {
-		return l.Documentclasses
+func (l *Ltxref) FilterDocumentclasses(like string, tag string) []Documentclass {
+	if like == "" && tag == "" {
+		return l.documentclasses
 	} else {
 		like = strings.ToLower(like)
+		tag = strings.ToLower(tag)
 	}
 	var itemsThatMatch []Documentclass
-	for _, item := range l.Documentclasses {
-		if fuzzy.Match(like, item.Name) {
+	for _, item := range l.documentclasses {
+		if fuzzy.Match(like, item.Name) && (tag == "" || hasTag(item.Label, tag)) {
 			itemsThatMatch = append(itemsThatMatch, item)
 		}
 	}
@@ -166,15 +125,16 @@ func (l *Ltxref) FilterDocumentclasses(like string) []Documentclass {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterPackages(like string) []Package {
-	if like == "" {
-		return l.Packages
+func (l *Ltxref) FilterPackages(like string, tag string) []Package {
+	if like == "" && tag == "" {
+		return l.packages
 	} else {
 		like = strings.ToLower(like)
+		tag = strings.ToLower(tag)
 	}
 	var itemsThatMatch []Package
-	for _, item := range l.Packages {
-		if fuzzy.Match(like, item.Name) {
+	for _, item := range l.packages {
+		if fuzzy.Match(like, item.Name) && (tag == "" || hasTag(item.Label, tag)) {
 			itemsThatMatch = append(itemsThatMatch, item)
 		}
 	}

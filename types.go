@@ -27,12 +27,12 @@ func init() {
 	}
 }
 
-// The LaTeX reference knows about commands, environments and packages
+// The LaTeX reference knows about commands, environments, documentclasses and packages
 type Ltxref struct {
 	commands        []Command
-	Environments    []Environment
-	Documentclasses []Documentclass
-	Packages        []Package
+	environments    []Environment
+	documentclasses []Documentclass
+	packages        []Package
 }
 
 type Documentclass struct {
