@@ -29,7 +29,7 @@ func init() {
 
 // The LaTeX reference knows about commands, environments and packages
 type Ltxref struct {
-	Commands        []Command
+	commands        []Command
 	Environments    []Environment
 	Documentclasses []Documentclass
 	Packages        []Package
@@ -45,10 +45,10 @@ type Documentclass struct {
 
 type Optiongroup struct {
 	ShortDescription map[string]template.HTML
-	Packageoption    []Packageoption
+	Classoption      []Classoption
 }
 
-type Packageoption struct {
+type Classoption struct {
 	Name             string
 	Default          bool
 	ShortDescription map[string]template.HTML
@@ -64,11 +64,21 @@ type Command struct {
 	Variant          []Variant
 }
 
+type Packageoption struct {
+	Name             string
+	Default          bool
+	ShortDescription map[string]template.HTML
+	Description      map[string]template.HTML
+}
+
 type Package struct {
 	Name             string
+	Level            string
+	Label            []string
 	ShortDescription map[string]template.HTML
 	Description      map[string]template.HTML
 	Commands         []Command
+	Options          []Packageoption
 }
 
 type Environment struct {

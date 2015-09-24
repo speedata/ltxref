@@ -42,7 +42,7 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 			switch v.Name.Local {
 			case "command":
 				cmd := readCommand(v.Attr, dec)
-				lr.Commands = append(lr.Commands, cmd)
+				lr.commands = append(lr.commands, cmd)
 			case "environment":
 				env := readEnvironment(v.Attr, dec)
 				lr.Environments = append(lr.Environments, env)
@@ -118,8 +118,8 @@ forloop:
 			case "shortdescription":
 				lang, text := readDescription(v.Attr, dec)
 				og.ShortDescription[lang] = text
-			case "packageoption":
-				og.Packageoption = append(og.Packageoption, readPackageoption(v.Attr, dec))
+			case "classoption":
+				og.Classoption = append(og.Classoption, readClassoption(v.Attr, dec))
 			}
 		case xml.EndElement:
 			if v.Name.Local == "optiongroup" {
@@ -128,6 +128,45 @@ forloop:
 		}
 	}
 	return og
+}
+
+func readClassoption(attributes []xml.Attr, dec *xml.Decoder) Classoption {
+	po := Classoption{}
+	po.ShortDescription = make(map[string]template.HTML)
+	po.Description = make(map[string]template.HTML)
+
+	for _, attribute := range attributes {
+		switch attribute.Name.Local {
+		case "name":
+			po.Name = attribute.Value
+		case "default":
+			po.Default = attribute.Value == "yes"
+		}
+	}
+
+forloop:
+	for {
+		t, err := dec.Token()
+		if err != nil {
+			break
+		}
+		switch v := t.(type) {
+		case xml.StartElement:
+			switch v.Name.Local {
+			case "shortdescription":
+				lang, text := readDescription(v.Attr, dec)
+				po.ShortDescription[lang] = text
+			case "description":
+				lang, text := readDescription(v.Attr, dec)
+				po.Description[lang] = text
+			}
+		case xml.EndElement:
+			if v.Name.Local == "classoption" {
+				break forloop
+			}
+		}
+	}
+	return po
 }
 
 func readPackageoption(attributes []xml.Attr, dec *xml.Decoder) Packageoption {
@@ -223,6 +262,10 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 		switch attribute.Name.Local {
 		case "name":
 			pkg.Name = attribute.Value
+		case "level":
+			pkg.Level = attribute.Value
+		case "label":
+			pkg.Label = strings.Split(attribute.Value, ",")
 		}
 	}
 	for {
@@ -239,6 +282,8 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
 				pkg.Description[lang] = text
+			case "packageoption":
+				pkg.Options = append(pkg.Options, readPackageoption(v.Attr, dec))
 			case "command":
 				pkg.Commands = append(pkg.Commands, readCommand(v.Attr, dec))
 			}
