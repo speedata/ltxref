@@ -11,6 +11,9 @@
                 <ref name="environment"/>
             </oneOrMore>
             <oneOrMore>
+                <ref name="documentclass"/>
+            </oneOrMore>
+            <oneOrMore>
                 <ref name="package"/>
             </oneOrMore>
             <attribute name="version"/>
@@ -41,10 +44,7 @@
             </attribute>
         </optional>
         <oneOrMore>
-            <element name="shortdescription">
-                <ref name="attlang"/>
-                <text/>
-            </element>
+            <ref name="shortdescription"/>
         </oneOrMore>
         <oneOrMore>
             <ref name="description"/>
@@ -88,6 +88,30 @@
             </element>
         </optional>
     </define>
+    <define name="documentclass">
+        <element name="documentclass">
+            <attribute name="name"/>
+            <attribute name="label"/>
+            <optional><attribute name="level"/></optional>
+            <ref name="shortdescription"/>
+            <ref name="description"/>
+            <oneOrMore>
+                <element name="optiongroup">
+                    <ref name="shortdescription"/>
+                    <oneOrMore>
+                        <element name="packageoption">
+                            <attribute name="name"></attribute>
+                            <attribute name="default">
+                                <choice><value>yes</value><value>no</value></choice>
+                            </attribute>
+                            <ref name="shortdescription"/>
+                            <ref name="description"/>
+                        </element>
+                    </oneOrMore>
+                </element>
+            </oneOrMore>
+        </element>
+    </define>
     <define name="cmd">
         <element name="cmd">
             <attribute name="name"/>
@@ -120,6 +144,12 @@
             <ref name="description"></ref>
         </element>
     </define>
+    <define name="shortdescription">
+        <element name="shortdescription">
+            <ref name="attlang"/>
+            <text/>
+        </element>
+    </define>
     <define name="description">
         <element name="description">
             <ref name="attlang"/>
@@ -128,9 +158,7 @@
     </define>
     <define name="attlang">
         <attribute name="lang">
-            <choice>
-                <value>en</value>
-            </choice>
+            <value>en</value>
         </attribute>
     </define>
 </grammar>

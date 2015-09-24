@@ -46,18 +46,127 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 			case "environment":
 				env := readEnvironment(v.Attr, dec)
 				lr.Environments = append(lr.Environments, env)
+			case "documentclass":
+				lr.Documentclasses = append(lr.Documentclasses, readDocumentclass(v.Attr, dec))
 			case "package":
 				env := readPackage(v.Attr, dec)
 				lr.Packages = append(lr.Packages, env)
 			}
 		case xml.EndElement:
 			switch v.Name.Local {
-			case "command":
+			case "ltxref":
 				return lr, nil
 			}
 		}
 	}
+	// never reached b/c xml.EndElement catches the closing tag
 	return lr, nil
+}
+
+func readDocumentclass(attributes []xml.Attr, dec *xml.Decoder) Documentclass {
+	dc := Documentclass{}
+	dc.ShortDescription = make(map[string]template.HTML)
+	dc.Description = make(map[string]template.HTML)
+	for _, attribute := range attributes {
+		switch attribute.Name.Local {
+		case "name":
+			dc.Name = attribute.Value
+		case "label":
+			dc.Label = strings.Split(attribute.Value, ",")
+		}
+	}
+forloop:
+	for {
+		t, err := dec.Token()
+		if err != nil {
+			break
+		}
+		switch v := t.(type) {
+		case xml.StartElement:
+			switch v.Name.Local {
+			case "shortdescription":
+				lang, text := readDescription(v.Attr, dec)
+				dc.ShortDescription[lang] = text
+			case "description":
+				lang, text := readDescription(v.Attr, dec)
+				dc.Description[lang] = text
+			case "optiongroup":
+				dc.Optiongroup = append(dc.Optiongroup, readOptiongroup(v.Attr, dec))
+			}
+		case xml.EndElement:
+			switch v.Name.Local {
+			case "documentclass":
+				break forloop
+			}
+		}
+	}
+	return dc
+}
+func readOptiongroup(attributes []xml.Attr, dec *xml.Decoder) Optiongroup {
+	og := Optiongroup{}
+	og.ShortDescription = make(map[string]template.HTML)
+
+forloop:
+	for {
+		t, err := dec.Token()
+		if err != nil {
+			break
+		}
+		switch v := t.(type) {
+		case xml.StartElement:
+			switch v.Name.Local {
+			case "shortdescription":
+				lang, text := readDescription(v.Attr, dec)
+				og.ShortDescription[lang] = text
+			case "packageoption":
+				og.Packageoption = append(og.Packageoption, readPackageoption(v.Attr, dec))
+			}
+		case xml.EndElement:
+			if v.Name.Local == "optiongroup" {
+				break forloop
+			}
+		}
+	}
+	return og
+}
+
+func readPackageoption(attributes []xml.Attr, dec *xml.Decoder) Packageoption {
+	po := Packageoption{}
+	po.ShortDescription = make(map[string]template.HTML)
+	po.Description = make(map[string]template.HTML)
+
+	for _, attribute := range attributes {
+		switch attribute.Name.Local {
+		case "name":
+			po.Name = attribute.Value
+		case "default":
+			po.Default = attribute.Value == "yes"
+		}
+	}
+
+forloop:
+	for {
+		t, err := dec.Token()
+		if err != nil {
+			break
+		}
+		switch v := t.(type) {
+		case xml.StartElement:
+			switch v.Name.Local {
+			case "shortdescription":
+				lang, text := readDescription(v.Attr, dec)
+				po.ShortDescription[lang] = text
+			case "description":
+				lang, text := readDescription(v.Attr, dec)
+				po.Description[lang] = text
+			}
+		case xml.EndElement:
+			if v.Name.Local == "packageoption" {
+				break forloop
+			}
+		}
+	}
+	return po
 }
 
 func readArgument(attributes []xml.Attr, dec *xml.Decoder) Argument {
@@ -253,8 +362,6 @@ func readDescription(attributes []xml.Attr, dec *xml.Decoder) (string, template.
 		case xml.EndElement:
 			return lang, template.HTML(str)
 		default:
-			// huh?
-			fmt.Printf("%#v\n", v)
 		}
 	}
 	// never reached!?!?
