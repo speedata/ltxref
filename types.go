@@ -16,6 +16,7 @@ const (
 )
 
 var argumenttypemap map[string]Argumenttype
+var argumentTypeReveseMap map[Argumenttype]string
 
 func init() {
 	argumenttypemap = map[string]Argumenttype{
@@ -25,6 +26,10 @@ func init() {
 		"optlist":              OPTLIST,
 		"todimenorspreaddimen": TODIMENORSPREADDIMEN,
 	}
+	argumentTypeReveseMap = make(map[Argumenttype]string, len(argumenttypemap))
+	for key, value := range argumenttypemap {
+		argumentTypeReveseMap[value] = key
+	}
 }
 
 // The LaTeX reference knows about commands, environments, documentclasses and packages
@@ -33,17 +38,20 @@ type Ltxref struct {
 	environments    []Environment
 	documentclasses []Documentclass
 	packages        []Package
+	Version         string
 }
 
 type Documentclass struct {
 	Name             string
 	Label            []string
+	Level            string
 	ShortDescription map[string]template.HTML
 	Description      map[string]template.HTML
 	Optiongroup      []Optiongroup
 }
 
 type Optiongroup struct {
+	Name             string
 	ShortDescription map[string]template.HTML
 	Classoption      []Classoption
 }
@@ -75,6 +83,7 @@ type Package struct {
 	Name             string
 	Level            string
 	Label            []string
+	LoadsPackages    []string
 	ShortDescription map[string]template.HTML
 	Description      map[string]template.HTML
 	Commands         []Command

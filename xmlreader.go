@@ -39,6 +39,11 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 		}
 		switch v := t.(type) {
 		case xml.StartElement:
+			for _, attribute := range v.Attr {
+				if attribute.Name.Local == "version" {
+					lr.Version = attribute.Value
+				}
+			}
 			switch v.Name.Local {
 			case "command":
 				cmd := readCommand(v.Attr, dec)
@@ -71,6 +76,8 @@ func readDocumentclass(attributes []xml.Attr, dec *xml.Decoder) Documentclass {
 		switch attribute.Name.Local {
 		case "name":
 			dc.Name = attribute.Value
+		case "level":
+			dc.Level = attribute.Value
 		case "label":
 			dc.Label = strings.Split(attribute.Value, ",")
 		}
@@ -105,6 +112,12 @@ forloop:
 func readOptiongroup(attributes []xml.Attr, dec *xml.Decoder) Optiongroup {
 	og := Optiongroup{}
 	og.ShortDescription = make(map[string]template.HTML)
+	for _, attribute := range attributes {
+		switch attribute.Name.Local {
+		case "name":
+			og.Name = attribute.Value
+		}
+	}
 
 forloop:
 	for {
@@ -266,6 +279,9 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 			pkg.Level = attribute.Value
 		case "label":
 			pkg.Label = strings.Split(attribute.Value, ",")
+		case "loadspackages":
+			pkg.LoadsPackages = strings.Split(attribute.Value, ",")
+
 		}
 	}
 	for {
