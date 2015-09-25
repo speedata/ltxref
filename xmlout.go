@@ -3,7 +3,6 @@ package ltxref
 import (
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"html/template"
 	"strings"
 )
@@ -306,7 +305,7 @@ func (v *Variant) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 }
 
 func (l *Ltxref) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	eltname := xml.Name{Local: "ltxref", Space: "urn:speedata.de:2015/latexref"}
+	eltname := xml.Name{Local: "ltxref", Space: "urn:speedata.de:2015:latexref"}
 	startelt := xml.StartElement{Name: eltname}
 	startelt.Attr = append(startelt.Attr, xml.Attr{Name: xml.Name{Local: "version"}, Value: l.Version})
 
@@ -315,20 +314,20 @@ func (l *Ltxref) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if err != nil {
 		return err
 	}
-	err = e.Encode(l.commands)
+	err = e.Encode(l.Commands)
 	if err != nil {
 		return err
 	}
-	err = e.Encode(l.environments)
+	err = e.Encode(l.Environments)
 	if err != nil {
 		return err
 	}
-	err = e.Encode(l.documentclasses)
+	err = e.Encode(l.Documentclasses)
 	if err != nil {
 		return err
 	}
 
-	err = e.Encode(l.packages)
+	err = e.Encode(l.Packages)
 	if err != nil {
 		return err
 	}
@@ -345,11 +344,6 @@ func (l *Ltxref) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return nil
 }
 
-func (l *Ltxref) ToXML() {
-	a, err := xml.Marshal(l)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(string(a))
+func (l *Ltxref) ToXML() ([]byte, error) {
+	return xml.Marshal(l)
 }

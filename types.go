@@ -34,10 +34,10 @@ func init() {
 
 // The LaTeX reference knows about commands, environments, documentclasses and packages
 type Ltxref struct {
-	commands        []Command
-	environments    []Environment
-	documentclasses []Documentclass
-	packages        []Package
+	Commands        []Command
+	Environments    []Environment
+	Documentclasses []Documentclass
+	Packages        []Package
 	Version         string
 }
 
