@@ -10,20 +10,33 @@ import (
 type description struct {
 	XMLName xml.Name
 	Lang    string `xml:"lang,attr"`
-	Text    string `xml:",innerxml"`
+	Text    string
 }
 
 func marshalDescription(eltname string, e *xml.Encoder, desc map[string]template.HTML) error {
 	var err error
 	for lang, text := range desc {
-		d := description{}
-		d.XMLName = xml.Name{Local: eltname}
-		d.Lang = lang
-		d.Text = "<![CDATA[" + string(text) + "]]>"
-		err = e.Encode(d)
+		startElt := xml.StartElement{Name: xml.Name{Local: eltname}}
+
+		startElt.Attr = []xml.Attr{
+			xml.Attr{Name: xml.Name{Local: "lang"}, Value: lang},
+		}
+
+		err = e.EncodeToken(startElt)
 		if err != nil {
 			return err
 		}
+
+		err = e.EncodeToken(xml.CharData(string(text)))
+		if err != nil {
+			return err
+		}
+
+		err = e.EncodeToken(xml.EndElement{Name: startElt.Name})
+		if err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
