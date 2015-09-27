@@ -1,0 +1,3 @@
+bindata:
+	go-bindata -o bindata.go -pkg ltxref  -ignore=\\.DS_Store  templates/...
+

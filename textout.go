@@ -96,7 +96,13 @@ func init() {
 		"placehoder":      tfplaceholder,
 		"showdescription": tfshowdescription,
 	}
-	tpl = template.Must(template.New("").Funcs(funcMap).ParseGlob("templates/*.txt"))
+
+	maintemplate := string(MustAsset("templates/main.txt"))
+	detailtemplate := string(MustAsset("templates/details.txt"))
+
+	tpl = template.Must(template.New("main.txt").Funcs(funcMap).Parse(maintemplate))
+	template.Must(tpl.Parse(detailtemplate))
+
 }
 
 func (c *Command) ToString(w io.Writer) {
