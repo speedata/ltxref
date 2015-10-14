@@ -41,6 +41,34 @@ func marshalDescription(eltname string, e *xml.Encoder, desc map[string]template
 	return nil
 }
 
+func marshalShortDescription(eltname string, e *xml.Encoder, desc map[string]string) error {
+	var err error
+	for lang, text := range desc {
+		startElt := xml.StartElement{Name: xml.Name{Local: eltname}}
+
+		startElt.Attr = []xml.Attr{
+			xml.Attr{Name: xml.Name{Local: "lang"}, Value: lang},
+		}
+
+		err = e.EncodeToken(startElt)
+		if err != nil {
+			return err
+		}
+
+		err = e.EncodeToken(xml.CharData(string(text)))
+		if err != nil {
+			return err
+		}
+
+		err = e.EncodeToken(xml.EndElement{Name: startElt.Name})
+		if err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
 func (c *Command) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	var err error
 
@@ -54,7 +82,7 @@ func (c *Command) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if err != nil {
 		return err
 	}
-	err = marshalDescription("shortdescription", e, c.ShortDescription)
+	err = marshalShortDescription("shortdescription", e, c.ShortDescription)
 	if err != nil {
 		return err
 	}
@@ -87,7 +115,7 @@ func (node *Environment) MarshalXML(e *xml.Encoder, start xml.StartElement) erro
 		return err
 	}
 
-	err = marshalDescription("shortdescription", e, node.ShortDescription)
+	err = marshalShortDescription("shortdescription", e, node.ShortDescription)
 	if err != nil {
 		return err
 	}
@@ -126,7 +154,7 @@ func (node *Package) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		return err
 	}
 
-	err = marshalDescription("shortdescription", e, node.ShortDescription)
+	err = marshalShortDescription("shortdescription", e, node.ShortDescription)
 	if err != nil {
 		return err
 	}
@@ -169,7 +197,7 @@ func (node *Documentclass) MarshalXML(e *xml.Encoder, start xml.StartElement) er
 		return err
 	}
 
-	err = marshalDescription("shortdescription", e, node.ShortDescription)
+	err = marshalShortDescription("shortdescription", e, node.ShortDescription)
 	if err != nil {
 		return err
 	}
@@ -205,7 +233,7 @@ func (node *Optiongroup) MarshalXML(e *xml.Encoder, start xml.StartElement) erro
 		return err
 	}
 
-	err = marshalDescription("shortdescription", e, node.ShortDescription)
+	err = marshalShortDescription("shortdescription", e, node.ShortDescription)
 	if err != nil {
 		return err
 	}
@@ -243,7 +271,7 @@ func (node *Classoption) MarshalXML(e *xml.Encoder, start xml.StartElement) erro
 		return err
 	}
 
-	err = marshalDescription("shortdescription", e, node.ShortDescription)
+	err = marshalShortDescription("shortdescription", e, node.ShortDescription)
 	if err != nil {
 		return err
 	}

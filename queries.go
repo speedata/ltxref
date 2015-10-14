@@ -7,11 +7,17 @@ import (
 	"github.com/renstrom/fuzzysearch/fuzzy"
 )
 
+func (l *Ltxref) AddCommand(commandname string) (*Command, error) {
+	cmd := &Command{}
+	cmd.Name = commandname
+	l.Commands = append(l.Commands, cmd)
+	return cmd, nil
+}
+
 // packagename may be empty for the kernel commands
 func (l *Ltxref) GetCommandFromPackage(commandname string, packagename string) *Command {
-	var cmdlist []Command
+	var cmdlist []*Command
 	// Needs better implementation!
-
 	if packagename != "" {
 		for _, v := range l.Packages {
 			if v.Name == packagename {
@@ -25,7 +31,7 @@ func (l *Ltxref) GetCommandFromPackage(commandname string, packagename string) *
 
 	for _, v := range cmdlist {
 		if v.Name == commandname {
-			return &v
+			return v
 		}
 	}
 	return nil
@@ -101,14 +107,14 @@ func (l *Ltxref) Tags() []string {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterCommands(like string, tag string) []Command {
+func (l *Ltxref) FilterCommands(like string, tag string) []*Command {
 	if like == "" && tag == "" {
 		return l.Commands
 	} else {
 		like = strings.ToLower(like)
 		tag = strings.ToLower(tag)
 	}
-	var commandsThatMatch []Command
+	var commandsThatMatch []*Command
 	for _, command := range l.Commands {
 		if fuzzy.Match(like, command.Name) && (tag == "" || hasTag(command.Label, tag)) {
 			commandsThatMatch = append(commandsThatMatch, command)

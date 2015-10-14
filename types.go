@@ -34,7 +34,7 @@ func init() {
 
 // The LaTeX reference knows about commands, environments, documentclasses and packages
 type Ltxref struct {
-	Commands        []Command
+	Commands        []*Command
 	Environments    []Environment
 	Documentclasses []Documentclass
 	Packages        []Package
@@ -45,29 +45,36 @@ type Documentclass struct {
 	Name             string
 	Label            []string
 	Level            string
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Description      map[string]template.HTML
 	Optiongroup      []Optiongroup
 }
 
 type Optiongroup struct {
 	Name             string
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Classoption      []Classoption
 }
 
 type Classoption struct {
 	Name             string
 	Default          bool
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Description      map[string]template.HTML
+}
+
+func NewCommand() *Command {
+	c := &Command{}
+	c.ShortDescription = make(map[string]string)
+	c.Description = make(map[string]template.HTML)
+	return c
 }
 
 type Command struct {
 	Name             string
 	Level            string
 	Label            []string
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Description      map[string]template.HTML
 	Variant          []Variant
 }
@@ -75,7 +82,7 @@ type Command struct {
 type Packageoption struct {
 	Name             string
 	Default          bool
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Description      map[string]template.HTML
 }
 
@@ -84,9 +91,9 @@ type Package struct {
 	Level            string
 	Label            []string
 	LoadsPackages    []string
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Description      map[string]template.HTML
-	Commands         []Command
+	Commands         []*Command
 	Options          []Packageoption
 }
 
@@ -94,17 +101,28 @@ type Environment struct {
 	Name             string
 	Level            string
 	Label            []string
-	ShortDescription map[string]template.HTML
+	ShortDescription map[string]string
 	Description      map[string]template.HTML
 	Variant          []Variant
+}
+
+func NewVariant() *Variant {
+	v := &Variant{}
+	v.Arguments = make([]*Argument, 0)
+	v.Description = make(map[string]template.HTML)
+	return v
 }
 
 // Some commands can have variants, such as \section or \section*.
 // These commands are similar, so they should be documented together.
 type Variant struct {
 	Name        string
-	Arguments   []Argument
+	Arguments   []*Argument
 	Description map[string]template.HTML
+}
+
+func NewArgument() *Argument {
+	return &Argument{}
 }
 
 // Argument of a command or an environment

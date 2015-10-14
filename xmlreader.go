@@ -70,7 +70,7 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 
 func readDocumentclass(attributes []xml.Attr, dec *xml.Decoder) Documentclass {
 	dc := Documentclass{}
-	dc.ShortDescription = make(map[string]template.HTML)
+	dc.ShortDescription = make(map[string]string)
 	dc.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
@@ -92,7 +92,7 @@ forloop:
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				dc.ShortDescription[lang] = text
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
@@ -111,7 +111,7 @@ forloop:
 }
 func readOptiongroup(attributes []xml.Attr, dec *xml.Decoder) Optiongroup {
 	og := Optiongroup{}
-	og.ShortDescription = make(map[string]template.HTML)
+	og.ShortDescription = make(map[string]string)
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
 		case "name":
@@ -129,7 +129,7 @@ forloop:
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				og.ShortDescription[lang] = text
 			case "classoption":
 				og.Classoption = append(og.Classoption, readClassoption(v.Attr, dec))
@@ -145,7 +145,7 @@ forloop:
 
 func readClassoption(attributes []xml.Attr, dec *xml.Decoder) Classoption {
 	po := Classoption{}
-	po.ShortDescription = make(map[string]template.HTML)
+	po.ShortDescription = make(map[string]string)
 	po.Description = make(map[string]template.HTML)
 
 	for _, attribute := range attributes {
@@ -167,7 +167,7 @@ forloop:
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				po.ShortDescription[lang] = text
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
@@ -184,7 +184,7 @@ forloop:
 
 func readPackageoption(attributes []xml.Attr, dec *xml.Decoder) Packageoption {
 	po := Packageoption{}
-	po.ShortDescription = make(map[string]template.HTML)
+	po.ShortDescription = make(map[string]string)
 	po.Description = make(map[string]template.HTML)
 
 	for _, attribute := range attributes {
@@ -206,7 +206,7 @@ forloop:
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				po.ShortDescription[lang] = text
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
@@ -221,8 +221,8 @@ forloop:
 	return po
 }
 
-func readArgument(attributes []xml.Attr, dec *xml.Decoder) Argument {
-	argument := Argument{}
+func readArgument(attributes []xml.Attr, dec *xml.Decoder) *Argument {
+	argument := NewArgument()
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
 		case "name":
@@ -269,7 +269,7 @@ func readVariant(attributes []xml.Attr, dec *xml.Decoder) Variant {
 
 func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 	pkg := Package{}
-	pkg.ShortDescription = make(map[string]template.HTML)
+	pkg.ShortDescription = make(map[string]string)
 	pkg.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
@@ -293,7 +293,7 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				pkg.ShortDescription[lang] = text
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
@@ -316,7 +316,7 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 
 func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) Environment {
 	env := Environment{}
-	env.ShortDescription = make(map[string]template.HTML)
+	env.ShortDescription = make(map[string]string)
 	env.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
@@ -337,7 +337,7 @@ func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) Environment {
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				env.ShortDescription[lang] = text
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
@@ -357,10 +357,9 @@ func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) Environment {
 	return env
 }
 
-func readCommand(attributes []xml.Attr, dec *xml.Decoder) Command {
-	cmd := Command{}
-	cmd.ShortDescription = make(map[string]template.HTML)
-	cmd.Description = make(map[string]template.HTML)
+func readCommand(attributes []xml.Attr, dec *xml.Decoder) *Command {
+	cmd := NewCommand()
+
 	for _, attribute := range attributes {
 		switch attribute.Name.Local {
 		case "name":
@@ -370,7 +369,6 @@ func readCommand(attributes []xml.Attr, dec *xml.Decoder) Command {
 		case "label":
 			cmd.Label = strings.Split(attribute.Value, ",")
 		}
-
 	}
 
 	for {
@@ -382,7 +380,7 @@ func readCommand(attributes []xml.Attr, dec *xml.Decoder) Command {
 		case xml.StartElement:
 			switch v.Name.Local {
 			case "shortdescription":
-				lang, text := readDescription(v.Attr, dec)
+				lang, text := readShortDescription(v.Attr, dec)
 				cmd.ShortDescription[lang] = text
 			case "description":
 				lang, text := readDescription(v.Attr, dec)
@@ -427,4 +425,30 @@ func readDescription(attributes []xml.Attr, dec *xml.Decoder) (string, template.
 	}
 	// never reached!?!?
 	return lang, template.HTML(str)
+}
+
+func readShortDescription(attributes []xml.Attr, dec *xml.Decoder) (string, string) {
+	var lang string
+	for _, attribute := range attributes {
+		if attribute.Name.Local == "lang" {
+			lang = attribute.Value
+		}
+	}
+	var str string
+	for {
+
+		t, err := dec.Token()
+		if err != nil {
+			break
+		}
+		switch v := t.(type) {
+		case xml.CharData:
+			str += string(v)
+		case xml.EndElement:
+			return lang, str
+		default:
+		}
+	}
+	// never reached!?!?
+	return lang, str
 }

@@ -1,3 +1,6 @@
 bindata:
 	go-bindata -o bindata.go -pkg ltxref  -ignore=\\.DS_Store  templates/...
 
+bindata-debug:
+	go-bindata -debug -o bindata.go -pkg ltxref  -ignore=\\.DS_Store  templates/...
+
