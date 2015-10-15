@@ -8,7 +8,7 @@ import (
 )
 
 func (l *Ltxref) AddCommand(commandname string) (*Command, error) {
-	cmd := &Command{}
+	cmd := NewCommand()
 	cmd.Name = commandname
 	l.Commands = append(l.Commands, cmd)
 	return cmd, nil
