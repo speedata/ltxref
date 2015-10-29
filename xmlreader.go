@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -60,6 +61,7 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 		case xml.EndElement:
 			switch v.Name.Local {
 			case "ltxref":
+				sort.Sort(lr.Commands)
 				return lr, nil
 			}
 		}

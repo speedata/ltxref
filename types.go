@@ -2,6 +2,7 @@ package ltxref
 
 import (
 	"html/template"
+	"strings"
 )
 
 type Argumenttype int
@@ -32,9 +33,23 @@ func init() {
 	}
 }
 
+type Commands []*Command
+
+func (slice Commands) Len() int {
+	return len(slice)
+}
+
+func (slice Commands) Less(i, j int) bool {
+	return strings.ToLower(slice[i].Name) < strings.ToLower(slice[j].Name)
+}
+
+func (slice Commands) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
+
 // The LaTeX reference knows about commands, environments, documentclasses and packages
 type Ltxref struct {
-	Commands        []*Command
+	Commands        Commands
 	Environments    []Environment
 	Documentclasses []Documentclass
 	Packages        []Package
@@ -93,7 +108,7 @@ type Package struct {
 	LoadsPackages    []string
 	ShortDescription map[string]string
 	Description      map[string]template.HTML
-	Commands         []*Command
+	Commands         Commands
 	Options          []Packageoption
 }
 

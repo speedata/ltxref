@@ -11,6 +11,7 @@ func (l *Ltxref) AddCommand(commandname string) (*Command, error) {
 	cmd := NewCommand()
 	cmd.Name = commandname
 	l.Commands = append(l.Commands, cmd)
+	sort.Sort(l.Commands)
 	return cmd, nil
 }
 
@@ -106,20 +107,6 @@ func (l *Ltxref) Tags() []string {
 	return mk
 }
 
-type Commands []*Command
-
-func (slice Commands) Len() int {
-	return len(slice)
-}
-
-func (slice Commands) Less(i, j int) bool {
-	return strings.ToLower(slice[i].Name) < strings.ToLower(slice[j].Name)
-}
-
-func (slice Commands) Swap(i, j int) {
-	slice[i], slice[j] = slice[j], slice[i]
-}
-
 // Case insensitive fuzzy match.
 func (l *Ltxref) FilterCommands(like string, tag string) Commands {
 	var commandsThatMatch Commands
@@ -131,7 +118,6 @@ func (l *Ltxref) FilterCommands(like string, tag string) Commands {
 			commandsThatMatch = append(commandsThatMatch, command)
 		}
 	}
-	sort.Sort(commandsThatMatch)
 	return commandsThatMatch
 }
 
