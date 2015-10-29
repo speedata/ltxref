@@ -106,20 +106,32 @@ func (l *Ltxref) Tags() []string {
 	return mk
 }
 
+type Commands []*Command
+
+func (slice Commands) Len() int {
+	return len(slice)
+}
+
+func (slice Commands) Less(i, j int) bool {
+	return strings.ToLower(slice[i].Name) < strings.ToLower(slice[j].Name)
+}
+
+func (slice Commands) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
+
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterCommands(like string, tag string) []*Command {
-	if like == "" && tag == "" {
-		return l.Commands
-	} else {
-		like = strings.ToLower(like)
-		tag = strings.ToLower(tag)
-	}
-	var commandsThatMatch []*Command
+func (l *Ltxref) FilterCommands(like string, tag string) Commands {
+	var commandsThatMatch Commands
+	like = strings.ToLower(like)
+	tag = strings.ToLower(tag)
+
 	for _, command := range l.Commands {
-		if fuzzy.Match(like, command.Name) && (tag == "" || hasTag(command.Label, tag)) {
+		if (like == "" || fuzzy.Match(like, command.Name)) && (tag == "" || hasTag(command.Label, tag)) {
 			commandsThatMatch = append(commandsThatMatch, command)
 		}
 	}
+	sort.Sort(commandsThatMatch)
 	return commandsThatMatch
 }
 
