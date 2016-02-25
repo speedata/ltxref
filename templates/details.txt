@@ -17,10 +17,10 @@
 
 
 
-{{ define  "classdetail" }}{{ with .Class }}{{ underline .Name 1 }}{{ showdescription ( index .ShortDescription "en" )}}
+{{ define  "classdetail" }}{{ with .Class }}{{ underline .Name 1 }}{{  index .ShortDescription "en" }}
 
-{{ underline "Class options" 2 }}{{range .Optiongroup}}{{ if ( index .ShortDescription "en") }}{{ showdescription ( index .ShortDescription "en" )}}
-{{end}}{{range .Classoption}}{{ if .Default}} *{{else}}  {{end}}{{.Name}}{{ with ( index .ShortDescription "en") }} - {{end}}{{ showdescription ( index .ShortDescription "en" )}}
+{{ underline "Class options" 2 }}{{range .Optiongroup}}{{ if ( index .ShortDescription "en") }}{{ index .ShortDescription "en" }}
+{{end}}{{range .Classoption}}{{ if .Default}} *{{else}}  {{end}}{{.Name}}{{ with ( index .ShortDescription "en") }} - {{end}}{{ index .ShortDescription "en" }}
 {{end}}
 {{end}}
 ······················································
@@ -33,7 +33,7 @@
 
 
 {{ define  "envdetail" }}{{ with .Environment}}{{ underline .Name 1 }}
-{{ showdescription ( index .ShortDescription "en" )}}
+{{ index .ShortDescription "en" }}
 {{ range $idx, $var := .Variant }}
 {{ if gt $idx 0 }}······················································{{ end }}
 
@@ -53,7 +53,7 @@
 
 
 
-{{ define  "pkgdetail" }}{{ with .Pkg}}{{ underline .Name 1}}{{ showdescription ( index .ShortDescription "en" )}}
+{{ define  "pkgdetail" }}{{ with .Pkg}}{{ underline .Name 1}}{{ index .ShortDescription "en" }}
 
 {{ underline "Package options" 2}}{{ range .Options }}{{.Name }}{{ with ( index .Description "en") }} - {{end}}{{ showdescription ( index .Description "en" )}}
 {{end}}{{/* range .Options */}}

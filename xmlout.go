@@ -182,7 +182,7 @@ func (node *Package) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return nil
 }
 
-func (node *Documentclass) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (node *DocumentClass) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	var err error
 	startElt := xml.StartElement{Name: xml.Name{Local: "documentclass"}}
 
@@ -363,7 +363,7 @@ func (l *Ltxref) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if err != nil {
 		return err
 	}
-	err = e.Encode(l.Documentclasses)
+	err = e.Encode(l.DocumentClasses)
 	if err != nil {
 		return err
 	}

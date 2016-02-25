@@ -33,6 +33,34 @@ func init() {
 	}
 }
 
+type DocumentClasses []*DocumentClass
+
+func (slice DocumentClasses) Len() int {
+	return len(slice)
+}
+
+func (slice DocumentClasses) Less(i, j int) bool {
+	return strings.ToLower(slice[i].Name) < strings.ToLower(slice[j].Name)
+}
+
+func (slice DocumentClasses) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
+
+type Environments []*Environment
+
+func (slice Environments) Len() int {
+	return len(slice)
+}
+
+func (slice Environments) Less(i, j int) bool {
+	return strings.ToLower(slice[i].Name) < strings.ToLower(slice[j].Name)
+}
+
+func (slice Environments) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
+
 type Commands []*Command
 
 func (slice Commands) Len() int {
@@ -50,19 +78,26 @@ func (slice Commands) Swap(i, j int) {
 // The LaTeX reference knows about commands, environments, documentclasses and packages
 type Ltxref struct {
 	Commands        Commands
-	Environments    []Environment
-	Documentclasses []Documentclass
+	Environments    Environments
+	DocumentClasses DocumentClasses
 	Packages        []Package
 	Version         string
 }
 
-type Documentclass struct {
+type DocumentClass struct {
 	Name             string
 	Label            []string
 	Level            string
 	ShortDescription map[string]string
 	Description      map[string]template.HTML
 	Optiongroup      []Optiongroup
+}
+
+func NewDocumentClass() *DocumentClass {
+	dc := &DocumentClass{}
+	dc.ShortDescription = make(map[string]string)
+	dc.Description = make(map[string]template.HTML)
+	return dc
 }
 
 type Optiongroup struct {
@@ -119,6 +154,14 @@ type Environment struct {
 	ShortDescription map[string]string
 	Description      map[string]template.HTML
 	Variant          []Variant
+}
+
+func NewEnvironment() *Environment {
+	e := &Environment{}
+	e.Label = make([]string, 0)
+	e.ShortDescription = make(map[string]string)
+	e.Description = make(map[string]template.HTML)
+	return e
 }
 
 func NewVariant() *Variant {

@@ -15,6 +15,22 @@ func (l *Ltxref) AddCommand(commandname string) (*Command, error) {
 	return cmd, nil
 }
 
+func (l *Ltxref) AddDocumentClass(dcname string) (*DocumentClass, error) {
+	dc := NewDocumentClass()
+	dc.Name = dcname
+	l.DocumentClasses = append(l.DocumentClasses, dc)
+	sort.Sort(l.DocumentClasses)
+	return dc, nil
+}
+
+func (l *Ltxref) AddEnvironment(envname string) (*Environment, error) {
+	env := NewEnvironment()
+	env.Name = envname
+	l.Environments = append(l.Environments, env)
+	sort.Sort(l.Environments)
+	return env, nil
+}
+
 // packagename may be empty for the kernel commands
 func (l *Ltxref) GetCommandFromPackage(commandname string, packagename string) *Command {
 	var cmdlist []*Command
@@ -38,10 +54,10 @@ func (l *Ltxref) GetCommandFromPackage(commandname string, packagename string) *
 	return nil
 }
 
-func (l *Ltxref) GetDocumentclass(name string) *Documentclass {
-	for _, class := range l.Documentclasses {
+func (l *Ltxref) GetDocumentClass(name string) *DocumentClass {
+	for _, class := range l.DocumentClasses {
 		if class.Name == name {
-			return &class
+			return class
 		}
 	}
 	return nil
@@ -50,7 +66,7 @@ func (l *Ltxref) GetDocumentclass(name string) *Documentclass {
 func (l *Ltxref) GetEnvironmentWithName(name string) *Environment {
 	for _, env := range l.Environments {
 		if env.Name == name {
-			return &env
+			return env
 		}
 	}
 	return nil
@@ -91,7 +107,7 @@ func (l *Ltxref) Tags() []string {
 
 		}
 	}
-	for _, v := range l.Documentclasses {
+	for _, v := range l.DocumentClasses {
 		for _, label := range v.Label {
 			tags[label] = true
 		}
@@ -122,14 +138,14 @@ func (l *Ltxref) FilterCommands(like string, tag string) Commands {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterEnvironments(like string, tag string) []Environment {
+func (l *Ltxref) FilterEnvironments(like string, tag string) Environments {
 	if like == "" && tag == "" {
 		return l.Environments
 	} else {
 		like = strings.ToLower(like)
 		tag = strings.ToLower(tag)
 	}
-	var itemsThatMatch []Environment
+	var itemsThatMatch Environments
 	for _, item := range l.Environments {
 		if fuzzy.Match(like, item.Name) && (tag == "" || hasTag(item.Label, tag)) {
 			itemsThatMatch = append(itemsThatMatch, item)
@@ -139,15 +155,15 @@ func (l *Ltxref) FilterEnvironments(like string, tag string) []Environment {
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterDocumentclasses(like string, tag string) []Documentclass {
+func (l *Ltxref) FilterDocumentClasses(like string, tag string) DocumentClasses {
 	if like == "" && tag == "" {
-		return l.Documentclasses
+		return l.DocumentClasses
 	} else {
 		like = strings.ToLower(like)
 		tag = strings.ToLower(tag)
 	}
-	var itemsThatMatch []Documentclass
-	for _, item := range l.Documentclasses {
+	var itemsThatMatch DocumentClasses
+	for _, item := range l.DocumentClasses {
 		if fuzzy.Match(like, item.Name) && (tag == "" || hasTag(item.Label, tag)) {
 			itemsThatMatch = append(itemsThatMatch, item)
 		}

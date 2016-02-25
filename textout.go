@@ -139,9 +139,9 @@ func (e *Environment) ToString(w io.Writer) {
 		fmt.Println(err)
 	}
 }
-func (c *Documentclass) ToString(w io.Writer) {
+func (c *DocumentClass) ToString(w io.Writer) {
 	data := struct {
-		Class *Documentclass
+		Class *DocumentClass
 	}{
 		Class: c,
 	}

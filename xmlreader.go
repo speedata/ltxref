@@ -53,7 +53,7 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 				env := readEnvironment(v.Attr, dec)
 				lr.Environments = append(lr.Environments, env)
 			case "documentclass":
-				lr.Documentclasses = append(lr.Documentclasses, readDocumentclass(v.Attr, dec))
+				lr.DocumentClasses = append(lr.DocumentClasses, readDocumentclass(v.Attr, dec))
 			case "package":
 				env := readPackage(v.Attr, dec)
 				lr.Packages = append(lr.Packages, env)
@@ -62,6 +62,7 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 			switch v.Name.Local {
 			case "ltxref":
 				sort.Sort(lr.Commands)
+				sort.Sort(lr.Environments)
 				return lr, nil
 			}
 		}
@@ -70,8 +71,8 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 	return lr, nil
 }
 
-func readDocumentclass(attributes []xml.Attr, dec *xml.Decoder) Documentclass {
-	dc := Documentclass{}
+func readDocumentclass(attributes []xml.Attr, dec *xml.Decoder) *DocumentClass {
+	dc := NewDocumentClass()
 	dc.ShortDescription = make(map[string]string)
 	dc.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
@@ -316,8 +317,8 @@ func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
 	return pkg
 }
 
-func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) Environment {
-	env := Environment{}
+func readEnvironment(attributes []xml.Attr, dec *xml.Decoder) *Environment {
+	env := &Environment{}
 	env.ShortDescription = make(map[string]string)
 	env.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
