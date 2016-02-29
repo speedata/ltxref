@@ -7,12 +7,6 @@ import (
 	"strings"
 )
 
-type description struct {
-	XMLName xml.Name
-	Lang    string `xml:"lang,attr"`
-	Text    string
-}
-
 func marshalDescription(eltname string, e *xml.Encoder, desc map[string]template.HTML) error {
 	var err error
 	for lang, text := range desc {

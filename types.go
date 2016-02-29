@@ -75,12 +75,26 @@ func (slice Commands) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
+type Packages []*Package
+
+func (slice Packages) Len() int {
+	return len(slice)
+}
+
+func (slice Packages) Less(i, j int) bool {
+	return strings.ToLower(slice[i].Name) < strings.ToLower(slice[j].Name)
+}
+
+func (slice Packages) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
+
 // The LaTeX reference knows about commands, environments, documentclasses and packages
 type Ltxref struct {
 	Commands        Commands
 	Environments    Environments
 	DocumentClasses DocumentClasses
-	Packages        []Package
+	Packages        Packages
 	Version         string
 }
 
@@ -134,6 +148,15 @@ type Packageoption struct {
 	Default          bool
 	ShortDescription map[string]string
 	Description      map[string]template.HTML
+}
+
+func NewPackage() *Package {
+	p := &Package{}
+	p.Label = make([]string, 0)
+	p.LoadsPackages = make([]string, 0)
+	p.ShortDescription = make(map[string]string)
+	p.Description = make(map[string]template.HTML)
+	return p
 }
 
 type Package struct {

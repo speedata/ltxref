@@ -31,6 +31,14 @@ func (l *Ltxref) AddEnvironment(envname string) (*Environment, error) {
 	return env, nil
 }
 
+func (l *Ltxref) AddPackage(pkgname string) (*Package, error) {
+	pkg := NewPackage()
+	pkg.Name = pkgname
+	l.Packages = append(l.Packages, pkg)
+	sort.Sort(l.Packages)
+	return pkg, nil
+}
+
 // packagename may be empty for the kernel commands
 func (l *Ltxref) GetCommandFromPackage(commandname string, packagename string) *Command {
 	var cmdlist []*Command
@@ -75,7 +83,7 @@ func (l *Ltxref) GetEnvironmentWithName(name string) *Environment {
 func (l *Ltxref) GetPackageWithName(name string) *Package {
 	for _, pkg := range l.Packages {
 		if pkg.Name == name {
-			return &pkg
+			return pkg
 		}
 	}
 	return nil
@@ -172,14 +180,14 @@ func (l *Ltxref) FilterDocumentClasses(like string, tag string) DocumentClasses 
 }
 
 // Case insensitive fuzzy match.
-func (l *Ltxref) FilterPackages(like string, tag string) []Package {
+func (l *Ltxref) FilterPackages(like string, tag string) []*Package {
 	if like == "" && tag == "" {
 		return l.Packages
 	} else {
 		like = strings.ToLower(like)
 		tag = strings.ToLower(tag)
 	}
-	var itemsThatMatch []Package
+	var itemsThatMatch []*Package
 	for _, item := range l.Packages {
 		if fuzzy.Match(like, item.Name) && (tag == "" || hasTag(item.Label, tag)) {
 			itemsThatMatch = append(itemsThatMatch, item)

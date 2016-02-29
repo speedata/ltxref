@@ -55,8 +55,8 @@ func ReadXML(r io.Reader) (Ltxref, error) {
 			case "documentclass":
 				lr.DocumentClasses = append(lr.DocumentClasses, readDocumentclass(v.Attr, dec))
 			case "package":
-				env := readPackage(v.Attr, dec)
-				lr.Packages = append(lr.Packages, env)
+				pkg := readPackage(v.Attr, dec)
+				lr.Packages = append(lr.Packages, pkg)
 			}
 		case xml.EndElement:
 			switch v.Name.Local {
@@ -270,8 +270,8 @@ func readVariant(attributes []xml.Attr, dec *xml.Decoder) Variant {
 	return variant
 }
 
-func readPackage(attributes []xml.Attr, dec *xml.Decoder) Package {
-	pkg := Package{}
+func readPackage(attributes []xml.Attr, dec *xml.Decoder) *Package {
+	pkg := &Package{}
 	pkg.ShortDescription = make(map[string]string)
 	pkg.Description = make(map[string]template.HTML)
 	for _, attribute := range attributes {
