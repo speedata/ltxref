@@ -7,11 +7,17 @@ import (
 	"github.com/renstrom/fuzzysearch/fuzzy"
 )
 
-func (l *Ltxref) AddCommand(commandname string) (*Command, error) {
+func (l *Ltxref) AddCommand(commandname string, pkg string) (*Command, error) {
 	cmd := NewCommand()
 	cmd.Name = commandname
-	l.Commands = append(l.Commands, cmd)
-	sort.Sort(l.Commands)
+	if pkg == "" {
+		l.Commands = append(l.Commands, cmd)
+		sort.Sort(l.Commands)
+	} else {
+		p := l.GetPackageWithName(pkg)
+		p.Commands = append(p.Commands, cmd)
+		sort.Sort(p.Commands)
+	}
 	return cmd, nil
 }
 
